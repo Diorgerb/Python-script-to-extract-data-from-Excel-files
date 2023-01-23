@@ -1,0 +1,27 @@
+import csv
+import os
+import xlrd
+
+def extract_data_from_excel(file):
+    workbook = xlrd.open_workbook(file)
+    sheet = workbook.sheet_by_index(0)
+    product = sheet.cell_value(0, 0)
+    region = sheet.cell_value(1, 0)
+    data = []
+    for row in range(4, 8):
+        data.append([sheet.cell_value(row, col) for col in range(5)])
+    return product, region, data
+
+def main():
+    files = [file for file in os.listdir() if file.endswith('.xls')]
+    with open('output.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['File', 'Sheet', 'Product', 'Region', 'Customer Jan', 'Feb', 'Mar', 'Apr'])
+        for file in files:
+            product, region, data = extract_data_from_excel(file)
+            sheet = os.path.splitext(file)[0]
+            for row in data:
+                writer.writerow([file, sheet, product, region] + row)
+
+if __name__ == '__main__':
+    main()
